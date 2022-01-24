@@ -20,7 +20,9 @@
     "passport": "^0.4.1",
     "pug": "^3.0.0",
     "session": "^0.1.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "bcrypt": "5.0.0",
+    "passport-github": "^1.1.0"
   },
   "repository": {
     "type": "git",
