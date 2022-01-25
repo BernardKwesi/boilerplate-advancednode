@@ -23,7 +23,10 @@
     "passport-local": "^1.0.0",
     "bcrypt": "5.0.0",
     "passport-github": "^1.1.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "passport.socketio": "^3.7.0",
+    "connect-mongo": "^3.2.0",
+    "cookie-parser": "^1.4.5"
   },
   "repository": {
     "type": "git",
