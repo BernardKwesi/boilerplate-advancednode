@@ -8,9 +8,12 @@ const session = require('express-session');
 const ObjectID = require('mongodb').ObjectID;
 const LocalStrategy = require('passport-local');
 
+
 const routes = require("./routes.js");
 const auth = require("./auth.js");
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 //setting pug as the template engine
 app.set('view engine', 'pug');
 //using session middleware 
@@ -36,14 +39,33 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-myDB(async client => {
+myDB(async (client) => {
   const myDataBase = await client.db('ChatApp').collection('users');
-
 
 routes(app, myDataBase);
 auth(app,myDataBase);
 
+  let currentUsers = 0;
+  io.on('connection', (socket) => {
+    //increase currentUsers count by 1 when user connects
+    ++currentUsers;
+    io.emit('user count', currentUsers);
+    console.log('A user has connected');
+
+    socket.on('disconnect', () => {
+  /*anything you want to do on disconnect*/
+  //decrease users count by 1 when a user disconnects 
+    --currentUsers;
+    io.emit('user count', currentUsers);
+    console.log('A user has disconnected');
+});
+
+  });
  
+ 
+
+
+
 //defining middleware to ensure user is authenticated //before accessing /profile
 
 
@@ -55,7 +77,7 @@ app.use((req, res, next) => {
     .send('Not Found');
 });
 
-  
+
 
   // Be sure to add this...
 }).catch(e => {
@@ -65,6 +87,6 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
 });

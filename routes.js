@@ -1,5 +1,6 @@
 const passport= require('passport');
 const bcrypt = require('bcrypt');
+
 module.exports = function (app, myDataBase) {
 
 //defining middleware to ensure user is authenticated before //accessing page
@@ -23,17 +24,17 @@ function ensureAuthenticated(req, res, next) {
   });
 
 
-app.route('/login').post(passport.authenticate('local',{ failureRedirect: '/' },function(){
-
-}),(req,res)=>{
-      res.redirect('/profile');
+app.route('/login').post(passport.authenticate('local',{ failureRedirect: '/' }),function(req,res){
+    res.redirect("/profile");
 });
+
 
  
 app.route("/auth/github").get(passport.authenticate('github') );
 
 app.route("/auth/github/callback").get(passport.authenticate('local', { failureRedirect: '/' }),(req,res)=>{
-      res.redirect("/profile");
+  req.session.user_id = req.user.id
+      res.redirect("/chat");
 });
 
 //adding the middleware to the profile route
@@ -49,6 +50,12 @@ app.route('/logout')
     req.logout();
     //redirect to home /
     res.redirect('/');
+});
+
+
+//route to chat
+app.route("/chat").get(ensureAuthenticated, (req,res)=>{
+  res.render("pug/chat",{user: req.user});
 });
 
 //route to register users
